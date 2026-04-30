@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Krylox</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>KRYLOX</h1>
+  <input id="search" placeholder="Search games...">
+  <a href="admin.html">Admin</a>
+</header>
+
+<h3>🧠 Continue Playing</h3>
+<div id="continue"></div>
+
+<div id="gameGrid"></div>
+
+<div id="player" class="hidden">
+  <button onclick="closeGame()">X</button>
+  <iframe id="frame"></iframe>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
