@@ -1,7 +1,13 @@
+let showFavoritesOnly = false;
+
 let games = JSON.parse(localStorage.getItem("krylox_games")) || [
   { id: "2048", name: "2048", url: "https://play2048.co/" },
-  { id: "snake", name: "Snake", url: "https://playsnake.org/" }
+  { id: "snake", name: "Snake", url: "https://playsnake.org/" },
+  { id: "tetris", name: "Tetris", url: "https://tetris.com/play-tetris" },
+  { id: "drift", name: "Drift Hunters", url: "https://drifthunters2.io/" }
 ];
+
+/* ---------------- STORAGE ---------------- */
 
 function getStats(id) {
   return JSON.parse(localStorage.getItem("krylox_" + id)) || {
@@ -15,7 +21,7 @@ function saveStats(id, data) {
   localStorage.setItem("krylox_" + id, JSON.stringify(data));
 }
 
-/* ---------------- RENDER ---------------- */
+/* ---------------- GRID ---------------- */
 
 const grid = document.getElementById("gameGrid");
 
@@ -25,15 +31,20 @@ function render(list = games) {
   list.forEach(g => {
     const s = getStats(g.id);
 
+    if (showFavoritesOnly && !s.fav) return;
+
     const div = document.createElement("div");
-    div.className = "game";
+    div.className = "card";
 
     div.innerHTML = `
-      <span>${g.name}</span>
-      <small>${s.plays} plays</small>
+      <div class="glow"></div>
+      <h3>${g.name}</h3>
+      <p>${s.plays} plays</p>
+      <div class="star">${s.fav ? "★" : "☆"}</div>
     `;
 
     div.onclick = () => openGame(g);
+    div.ondblclick = () => toggleFav(g.id);
 
     grid.appendChild(div);
   });
@@ -49,7 +60,7 @@ function renderContinue() {
   let sorted = [...games]
     .map(g => ({ ...g, s: getStats(g.id) }))
     .sort((a, b) => b.s.last - a.s.last)
-    .slice(0, 5);
+    .slice(0, 6);
 
   el.innerHTML = sorted.map(g =>
     `<button onclick='openGame(${JSON.stringify(g).replace(/"/g,"&quot;")})'>${g.name}</button>`
@@ -74,6 +85,20 @@ function openGame(g) {
 function closeGame() {
   document.getElementById("player").classList.add("hidden");
   document.getElementById("frame").src = "";
+}
+
+/* ---------------- FAVORITES ---------------- */
+
+function toggleFav(id) {
+  const s = getStats(id);
+  s.fav = !s.fav;
+  saveStats(id, s);
+  render();
+}
+
+function toggleFavorites() {
+  showFavoritesOnly = !showFavoritesOnly;
+  render();
 }
 
 /* ---------------- SEARCH ---------------- */
